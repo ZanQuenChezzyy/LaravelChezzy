@@ -19,15 +19,15 @@ Jika sudah silahkan modifikasi file `php.ini` kemudian cari `;extension=zip` lal
 ### Clone Repositori dari GitHub
 Jalankan perintah berikut untuk meng-clone repositori starter kit dari GitHub ke lokal Anda.
 ```bash
-git clone https://github.com/ZanQuenChezzyy/laravel-chezzy.git
+git clone https://github.com/ZanQuenChezzyy/LaravelChezzy.git
 ```
-Perintah ini akan mengunduh seluruh kode dari repositori ke folder dengan nama `laravel-chezzy`.
+Perintah ini akan mengunduh seluruh kode dari repositori ke folder dengan nama `LaravelChezzy`.
 
 ### Masuk ke Direktori Proyek
 Setelah proses clone selesai, masuk ke dalam `direktori/folder` dengan perintah:
 
 ```bash
-cd laravel-chezzy
+cd LaravelChezzy
 ```
 Anda sekarang berada di dalam folder proyek tersebut.  
 
