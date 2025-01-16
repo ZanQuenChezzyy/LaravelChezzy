@@ -50,7 +50,7 @@ class UserRolePermissionSeeder extends Seeder
                 'name' => 'Administrator',
                 'email' => 'admin@starter.com',
                 'password' => Hash::make('12345678'),
-                'role' => ['Administrator', 'User'],
+                'role' => 'Administrator',
             ],
             [
                 'name' => 'User',

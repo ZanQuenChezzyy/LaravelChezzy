@@ -100,6 +100,7 @@ foreach ($selectedModels as $model) {
         $resourcePagesPath = __DIR__ . "/app/Filament/Resources/{$model}Resource/Pages";
         $listFile = "{$resourcePagesPath}/List{$model}s.php";
         $manageFile = "{$resourcePagesPath}/Manage{$model}s.php";
+        $resourceFile = __DIR__ . "/app/Filament/Resources/{$model}Resource.php";
 
         // Tentukan file yang akan diedit
         $targetFile = null;
@@ -171,6 +172,62 @@ PHP;
             file_put_contents($targetFile, $fileContent);
         } else {
             echo "\033[31mFile resource untuk {$model} tidak ditemukan.\033[0m\n";
+        }
+
+        // Cari blok kode ->bulkActions([...])
+        // Cari blok kode ->bulkActions([...])
+        if (file_exists($resourceFile)) {
+            $fileContent = file_get_contents($resourceFile);
+
+            // Tambahkan baris "use" jika belum ada
+            $usesToAdd = [
+                'use Filament\Tables\Actions\ExportBulkAction;',
+                'use App\Filament\Exports\\' . $model . 'Exporter;',
+                'use Filament\Actions\Exports\Enums\ExportFormat;',
+            ];
+
+            foreach ($usesToAdd as $useStatement) {
+                if (!str_contains($fileContent, $useStatement)) {
+                    if (preg_match('/namespace\s+.*?;/', $fileContent, $namespaceMatch)) {
+                        $fileContent = str_replace(
+                            $namespaceMatch[0],
+                            $namespaceMatch[0] . "\n" . $useStatement,
+                            $fileContent
+                        );
+                    }
+                }
+            }
+
+            if (preg_match('/->bulkActions\(\[\s*(.*?)\s*\]\)/s', $fileContent, $matches)) {
+                $actionsBlock = $matches[1];
+
+                // Blok kode ExportBulkAction yang ingin ditambahkan
+                $bulkActionCode = <<<PHP
+            ExportBulkAction::make()
+                ->exporter({$model}Exporter::class)
+                ->label('Ekspor {$model}')
+                ->formats([
+                    ExportFormat::Xlsx,
+                    ExportFormat::Csv,
+                ]),
+        PHP;
+
+                if (!str_contains($actionsBlock, "ExportBulkAction::make()")) {
+                    // Tambahkan ExportBulkAction ke dalam array bulkActions
+                    $updatedActionsBlock = $actionsBlock . "\n" . $bulkActionCode;
+                    $fileContent = str_replace($matches[0], str_replace($actionsBlock, $updatedActionsBlock, $matches[0]), $fileContent);
+                    echo "\033[32mExportBulkAction ditambahkan ke ->bulkActions() di {$resourceFile}.\033[0m\n";
+                } else {
+                    echo "\033[33mExportBulkAction sudah ada di ->bulkActions(). Tidak ada perubahan.\033[0m\n";
+                }
+            } else {
+                echo "\033[31m->bulkActions() tidak ditemukan atau tidak sesuai format di {$resourceFile}.\033[0m\n";
+            }
+
+            // Tulis ulang file jika ada perubahan
+            file_put_contents($resourceFile, $fileContent);
+        } else {
+            echo "\033[31mFile resource untuk {$model} tidak ditemukan di {$resourceFile}.\033[0m\n";
         }
     } else {
         echo "\033[31mGagal membuat exporter untuk $model.\033[0m\n";

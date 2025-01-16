@@ -8,6 +8,7 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
@@ -102,65 +103,58 @@ class UserResource extends Resource
                     ])
                     ->columns(1),
 
-                Tabs::make()
-                    ->tabs([
-                        Tab::make('Informasi Pribadi')
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label(__('filament-panels::pages/auth/edit-profile.form.name.label'))
-                                    ->placeholder(__('filament-panels::pages/auth/edit-profile.form.name.placeholder'))
-                                    ->inlineLabel()
-                                    ->columnSpanFull()
-                                    ->required()
-                                    ->minLength(3)
-                                    ->maxLength(45)
-                                    ->autofocus(),
+                Section::make('Informasi Pribadi')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label(__('filament-panels::pages/auth/edit-profile.form.name.label'))
+                            ->placeholder(__('filament-panels::pages/auth/edit-profile.form.name.placeholder'))
+                            ->inlineLabel()
+                            ->columnSpanFull()
+                            ->required()
+                            ->minLength(3)
+                            ->maxLength(45)
+                            ->autofocus(),
 
-                                TextInput::make('email')
-                                    ->label(__('filament-panels::pages/auth/edit-profile.form.email.label'))
-                                    ->placeholder(__('filament-panels::pages/auth/edit-profile.form.email.placeholder'))
-                                    ->inlineLabel()
-                                    ->columnSpanFull()
-                                    ->email()
-                                    ->required()
-                                    ->minLength(3)
-                                    ->maxLength(45)
-                                    ->unique(ignoreRecord: true),
-                            ]),
+                        TextInput::make('email')
+                            ->label(__('filament-panels::pages/auth/edit-profile.form.email.label'))
+                            ->placeholder(__('filament-panels::pages/auth/edit-profile.form.email.placeholder'))
+                            ->inlineLabel()
+                            ->columnSpanFull()
+                            ->email()
+                            ->required()
+                            ->minLength(3)
+                            ->maxLength(45)
+                            ->unique(ignoreRecord: true),
+                        TextInput::make('password')
+                            ->label(function ($record) {
+                                return $record ? __('Ubah Kata Sandi') : __('Kata Sandi');
+                            })
+                            ->placeholder(function ($record) {
+                                return $record ? __('Kosongkan jika tidak ingin mengubah') : __('Masukkan Kata Sandi');
+                            })
+                            ->inlineLabel()
+                            ->columnSpanFull()
+                            ->password()
+                            ->revealable(filament()->arePasswordsRevealable())
+                            ->rule(Password::default())
+                            ->autocomplete('new-password')
+                            ->dehydrated(fn($state): bool => filled($state))
+                            ->dehydrateStateUsing(fn($state): string => Hash::make($state))
+                            ->live(debounce: 500)
+                            ->same('passwordConfirmation')
+                            ->required(fn($record) => is_null($record)),
 
-                        Tab::make('Kata Sandi')
-                            ->schema([
-                                TextInput::make('password')
-                                    ->label(function ($record) {
-                                        return $record ? __('Ubah Kata Sandi') : __('Kata Sandi');
-                                    })
-                                    ->placeholder(function ($record) {
-                                        return $record ? __('Kosongkan jika tidak ingin mengubah') : __('Masukkan Kata Sandi');
-                                    })
-                                    ->inlineLabel()
-                                    ->columnSpanFull()
-                                    ->password()
-                                    ->revealable(filament()->arePasswordsRevealable())
-                                    ->rule(Password::default())
-                                    ->autocomplete('new-password')
-                                    ->dehydrated(fn($state): bool => filled($state))
-                                    ->dehydrateStateUsing(fn($state): string => Hash::make($state))
-                                    ->live(debounce: 500)
-                                    ->same('passwordConfirmation'),
-
-                                TextInput::make('passwordConfirmation')
-                                    ->label(__('Konfirmasi Kata Sandi'))
-                                    ->placeholder(__('Masukkan lagi Kata sandi'))
-                                    ->inlineLabel()
-                                    ->columnSpanFull()
-                                    ->password()
-                                    ->revealable(filament()->arePasswordsRevealable())
-                                    ->required()
-                                    ->visible(fn(Get $get): bool => filled($get('password')))
-                                    ->dehydrated(false),
-                            ])
-                    ])
-                    ->columnSpan([
+                        TextInput::make('passwordConfirmation')
+                            ->label(__('Konfirmasi Kata Sandi'))
+                            ->placeholder(__('Masukkan lagi Kata sandi'))
+                            ->inlineLabel()
+                            ->columnSpanFull()
+                            ->password()
+                            ->revealable(filament()->arePasswordsRevealable())
+                            ->required()
+                            ->visible(fn(Get $get): bool => filled($get('password')))
+                            ->dehydrated(false),
+                    ])->columnSpan([
                         'default' => fn(?User $record) => $record === null ? 3 : 3,
                         'sm' => fn(?User $record) => $record === null ? 2 : 3,
                         'md' => fn(?User $record) => $record === null ? 3 : 3,

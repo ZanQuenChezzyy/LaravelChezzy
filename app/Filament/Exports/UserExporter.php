@@ -6,7 +6,6 @@ use App\Models\User;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
-use PhpParser\Node\Stmt\Label;
 
 class UserExporter extends Exporter
 {
@@ -15,12 +14,10 @@ class UserExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')
-                ->label('ID'),
             ExportColumn::make('name')
-                ->Label('Nama'),
+                ->Label('Nama Pengguna'),
             ExportColumn::make('email')
-                ->Label('Email'),
+                ->Label('Email Pengguna'),
         ];
     }
 
@@ -31,7 +28,6 @@ class UserExporter extends Exporter
         if ($failedRowsCount = $export->getFailedRowsCount()) {
             $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
         }
-
         return $body;
     }
 }
