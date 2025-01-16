@@ -85,7 +85,6 @@ class UserResource extends Resource
                                     ->label('Peran Pengguna')
                                     ->placeholder('Pilih Peran Pengguna')
                                     ->relationship('roles', 'name')
-                                    ->multiple()
                                     ->native(false)
                                     ->preload()
                                     ->columnSpanFull()
