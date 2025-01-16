@@ -207,7 +207,7 @@ class UserResource extends Resource
                             . '<div>' . $nama . '<br>' . $email . '</div></div>';
                     })
                     ->html()
-                    ->searchable(),
+                    ->searchable(['name', 'email']),
 
                 TextColumn::make('roles.name')
                     ->label('Peran Pengguna')
