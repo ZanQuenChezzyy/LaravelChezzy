@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Clusters\RolePermission;
 use App\Filament\Resources\RoleResource\Pages;
 use App\Filament\Resources\RoleResource\RelationManagers;
+use App\Models\Permission;
 use App\Models\Role;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -68,8 +69,17 @@ class RoleResource extends Resource
                         ->native(false)
                         ->preload()
                         ->options(function () {
-                            return \App\Models\Permission::orderBy('created_at', 'asc')  // Mengurutkan berdasarkan tanggal dibuat (dari yang lama ke baru)
-                                ->pluck('name', 'id');
+                            $permissions = Permission::orderBy('created_at', 'asc')->get();
+                            $grouped = $permissions->groupBy(function ($permission) {
+                                $parts = explode(' ', $permission->name);
+                                $lastWord = end($parts);
+                                return "Izin {$lastWord}";
+                            });
+                            $options = [];
+                            foreach ($grouped as $groupName => $items) {
+                                $options[$groupName] = $items->pluck('name', 'id')->toArray();
+                            }
+                            return $options;
                         })
                         ->required(),
                 ])->columns(2)

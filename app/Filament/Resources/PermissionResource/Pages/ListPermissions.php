@@ -14,7 +14,8 @@ class ListPermissions extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Perizinan'),
+                ->label('Tambah Perizinan')
+                ->icon('heroicon-m-plus-circle'),
         ];
     }
 }

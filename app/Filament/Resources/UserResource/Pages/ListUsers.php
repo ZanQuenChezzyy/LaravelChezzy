@@ -19,10 +19,12 @@ class ListUsers extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Pengguna'),
+                ->label('Tambah Pengguna')
+                ->icon('heroicon-m-user-plus'),
             ExportAction::make()
                 ->exporter(UserExporter::class)
                 ->label('Ekspor Pengguna')
+                ->icon('heroicon-m-document-arrow-up')
                 ->formats([
                     ExportFormat::Xlsx,
                     ExportFormat::Csv,

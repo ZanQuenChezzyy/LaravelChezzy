@@ -14,7 +14,9 @@ class EditPermission extends EditRecord
     protected function getHeaderActions(): array
     {
         $existingActions = [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Hapus Perizinan')
+                ->icon('heroicon-m-trash'),
         ];
         return array_merge($existingActions, $this->getNavigationActions());
     }
